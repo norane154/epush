@@ -1,11 +1,10 @@
+//gọi table vào home 
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Button, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
 import TopHeader from '../components/header'; 
+import AppTable from '../components/hometable'; 
+
 export default function HomeScreen({ navigation }) {
-  
-  const handleLogout = () => {
-    navigation.replace('Login');
-  };
   
   const handleAccountPress = () => {
     console.log("Account button pressed");
@@ -17,13 +16,14 @@ export default function HomeScreen({ navigation }) {
         activeTab="ePush"
         onPressAccount={handleAccountPress} 
       />
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome to ePush!</Text>
-        <Text style={styles.subtitle}>Bạn đã đăng nhập thành công hehe.</Text>
-        
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutButtonText}>Đăng xuất</Text>
-        </TouchableOpacity>
+      <View style={styles.mainContent}>
+        <AppTable
+          pageSize={8}
+          onAdd={() => console.log('Sự kiện: Thêm ứng dụng')}
+          onView={(item) => console.log('Sự kiện: Xem item:', item.id)}
+          onEdit={(item) => console.log('Sự kiện: Sửa item:', item.id)}
+          onDelete={(item) => console.log('Sự kiện: Xóa item:', item.id)}
+        />
       </View>
     </SafeAreaView>
   );
@@ -32,34 +32,10 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
-  container: {
+  mainContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 40,
-  },
-  logoutButton: {
-    backgroundColor: '#F44336', 
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    padding: 24, 
   },
 });
