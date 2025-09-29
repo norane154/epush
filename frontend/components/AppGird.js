@@ -7,7 +7,7 @@ const DATA = Array.from({ length: 56 }).map((_, i) => ({
   bundleId: 'fpt-information-system-insight',
 }));
 
-/** Card theo đúng mock: badge FIS nghiêng góc trái, không thumbnail */
+
 const Card = ({ item, width = 230, onPress }) => (
   <TouchableOpacity activeOpacity={0.92} onPress={() => onPress?.(item)} style={[s.card, { width }]}>
     <View style={s.badgeTL}>
@@ -22,7 +22,7 @@ const Card = ({ item, width = 230, onPress }) => (
   </TouchableOpacity>
 );
 
-/** Grid – có thể set columns, gap, cardWidth để bám layout */
+
 export default function AppGrid({
   section, columns = 4, gap = 24, cardWidth = 230, onOpen, onAdd,
 }) {

@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import TopHeader from '../components/header';
-import AppGrid from '../components/AppGird'; // <— sửa đúng tên file
+import AppGrid from '../components/AppGird'; 
 
-const BG = require('../assets/images/bg.png'); // nền mờ
+const BG = require('../assets/images/bg.png'); 
 
 export default function HomeGridScreen({ navigation }) {
   const goToList = () => {
@@ -24,11 +24,11 @@ export default function HomeGridScreen({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#EEF2F6' }}>
       <TopHeader activeTab="ePush" />
-      <ImageBackground source={BG} resizeMode="cover" style={{ flex: 1 }}>
+      <ImageBackground source={BG}  style={{ flex: 1 }}>
         <View style={s.overlay}>
           <ScrollView contentContainerStyle={s.scroll}>
             <View style={s.container}>
-              {/* Hàng tiêu đề + toggle */}
+              
               <View style={s.rowHead}>
                 <Text style={s.h2}>Truy cập gần đây</Text>
                 <View style={s.toggleBox}>
@@ -41,7 +41,6 @@ export default function HomeGridScreen({ navigation }) {
                 </View>
               </View>
 
-              {/* Recent: 4 cột, cardWidth đồng nhất */}
               <AppGrid section="recent" cardWidth={230} gap={24} columns={4} />
 
               <Text style={[s.h2, { marginTop: 18 }]}>Tất cả ứng dụng</Text>
@@ -73,7 +72,7 @@ const s = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#1F2937',
-    flex: 1, // đẩy toggle sang phải
+    flex: 1, 
   },
   toggleBox: {
     flexDirection: 'row',

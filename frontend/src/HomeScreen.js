@@ -25,7 +25,7 @@ export default function HomeListScreen({ navigation }) {
             </View>
 
             <AppTable
-              onAdd={() => console.log('Thêm ứng dụng')}
+              onAdd={() => navigation.navigate('CreateApp')}
               onView={(it) => console.log('Xem', it.id)}
               onEdit={(it) => console.log('Sửa', it.id)}
               onDelete={(it) => console.log('Xoá', it.id)}
