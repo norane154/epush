@@ -11,7 +11,7 @@ export default function AppDetailScreen() {
   const { appName = 'App Name' } = (route.params || {}) as { appName?: string };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#dbe9e7]">
+    <SafeAreaView className="flex-1 bg-[#f5f5f5]">
       <TopHeader activeTab="ePush" />
       <View className="flex-1 flex-row">
         <SidebarBody
@@ -25,9 +25,6 @@ export default function AppDetailScreen() {
 
         <ScrollView className="flex-1">
           <View className="px-6 py-4">
-            <View className="bg-white rounded-xl border border-gray-200 p-4">
-              <Text className="text-lg font-semibold text-gray-800 mb-3">{appName}</Text>
-
               <DetailTable
                 onCreateNew={() => {/* mở tạo thông báo */}}
                 onExport={() => {/* export */}}
@@ -37,7 +34,6 @@ export default function AppDetailScreen() {
                 }}
               />
             </View>
-          </View>
         </ScrollView>
       </View>
     </SafeAreaView>

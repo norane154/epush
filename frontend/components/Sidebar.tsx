@@ -52,27 +52,11 @@ export default function SidebarBody({
   const [open, setOpen] = useState<Record<string, boolean>>({ [activeSection]: true });
   const toggle = (k: string) => setOpen((s) => ({ ...s, [k]: !s[k] }));
   
-   const handleBack = () => {
-    // Nếu cha truyền onBack thì dùng; không thì về HomeTable
-    if (onBack) return onBack();
-    navigation.navigate('HomeTable');                // 👈 ĐỔI tên route nếu bạn đặt khác
-    // hoặc muốn không chồng stack:
-    // navigation.reset({ index: 0, routes: [{ name: 'HomeTable' }] });
-  };
 
   return (
     <View className="w-72 bg-white border-r border-gray-200 relative">
-      {/* Nút Back */}
-      <TouchableOpacity
-        onPress={handleBack}                         // 👈 dùng handleBack
-        className="absolute top-2 right-3 w-9 h-9 rounded-full bg-gray-100 items-center justify-center z-10"
-        activeOpacity={0.85}
-      >
-        <Ionicons name="chevron-back-outline" size={20} color="#6b7280" />
-      </TouchableOpacity>
-
       {/* Chọn app */}
-      <View className="px-4 pt-5 pb-3 top-7">
+      <View className="px-4  pb-3 top-7">
         <TouchableOpacity
           onPress={onAppChange}
           activeOpacity={0.85}

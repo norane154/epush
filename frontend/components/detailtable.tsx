@@ -56,25 +56,25 @@ const DEFAULT_DATA = makeMock();
 
 /** ------------ layout config ------------ */
 const COLS: { key: string; title: string; width: number }[] = [
-  { key: 'idx',       title: 'STT',                                           width: 60 },
-  { key: 'name',      title: 'Tên thông báo',                                 width: 180 },
-  { key: 'code',      title: 'Tiêu đề',                                       width: 180 },
-  { key: 'title',     title: 'Nội dung',                                      width: 220 },
-  { key: 'img',       title: 'Hình ảnh',                                      width: 90 },
-  { key: 'type',      title: 'Loại thông báo',                                width: 220 },
-  { key: 'target',    title: 'Loại đối tượng',                                width: 160 },
-  { key: 'result',    title: 'Số người dùng\nThành công / Thất bại',          width: 220 },
-  { key: 'createdAt', title: 'Ngày tạo',                                      width: 120 },
-  { key: 'createdBy', title: 'Người tạo',                                     width: 120 },
-  { key: 'sentAt',    title: 'Ngày gửi',                                      width: 120 },
-  { key: 'sender',    title: 'Người gửi',                                     width: 120 },
+  { key: 'idx',       title: 'STT',                                  width: 60 },
+  { key: 'name',      title: 'Tên thông báo',                        width: 180 },
+  { key: 'code',      title: 'Tiêu đề',                              width: 180 },
+  { key: 'title',     title: 'Nội dung',                             width: 220 },
+  { key: 'img',       title: 'Hình ảnh',                             width: 90 },
+  { key: 'type',      title: 'Loại thông báo',                       width: 220 },
+  { key: 'target',    title: 'Loại đối tượng',                       width: 160 },
+  { key: 'result',    title: 'Số người dùng\nThành công / Thất bại', width: 220 },
+  { key: 'createdAt', title: 'Ngày tạo',                             width: 120 },
+  { key: 'createdBy', title: 'Người tạo',                            width: 120 },
+  { key: 'sentAt',    title: 'Ngày gửi',                             width: 120 },
+  { key: 'sender',    title: 'Người gửi',                            width: 120 },
 ];
 const TABLE_WIDTH = COLS.reduce((s, c) => s + c.width, 0);
 
 const PAGE_SIZE = 10;
 const ROW_H = 56;
 
-/** ------------ header ------------ */
+/** ------------ header row ------------ */
 const HeaderRow = () => (
   <View className="flex-row items-center bg-gray-50 border-b border-gray-200 px-3 py-3">
     {COLS.map((c) => (
@@ -85,7 +85,7 @@ const HeaderRow = () => (
   </View>
 );
 
-/** ------------ row ------------ */
+/** ------------ body row ------------ */
 const BodyRow = ({
   row,
   index,
@@ -168,6 +168,8 @@ export default function DetailTable({
   onRowPress,
 }: DetailTableProps) {
   const [q, setQ] = useState('');
+  const [groupOpen, setGroupOpen] = useState(false);
+
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return data;
@@ -201,134 +203,191 @@ export default function DetailTable({
   }, [page, totalPages]);
 
   return (
-    <View className="bg-white rounded-xl border border-gray-200 p-4">
-      {/* toolbar */}
-      <View className="flex-row items-center flex-wrap gap-2 mb-3">
-        <TouchableOpacity
-          onPress={onExport}
-          className="flex-row items-center bg-white border border-gray-300 rounded-md px-3 py-2"
-        >
-          <Text className="mr-2 text-sm">Export</Text>
-          <Icon name="download" size={16} color="#374151" />
-        </TouchableOpacity>
-
-        {['Nhóm thông báo', 'Loại thông báo', 'Loại đối tượng', 'Lịch trình thông báo'].map(
-          (t, idx) => (
-            <TouchableOpacity
-              key={idx}
-              className="flex-row items-center bg-white border border-gray-300 rounded-md px-3 py-2"
-            >
-              <Text className="mr-2 text-sm font-bold ">{t}: Tất cả</Text>
-              <Icon name="chevron-down" size={16} color="#374151" />
-            </TouchableOpacity>
-          ),
-        )}
-
-        <View className="flex-1" />
-
-        <TouchableOpacity
-          onPress={onCreateNew}
-          className="bg-sky-600 rounded-md px-4 py-2 mr-3"
-        >
-          <Text className="text-white text-sm font-medium">+ Thông báo mới</Text>
-        </TouchableOpacity>
-
-        <View className="flex-row items-center bg-gray-50 rounded-md px-3 h-10 w-[240px]">
-          <Icon name="search" size={18} color="#9ca3af" />
-          <TextInput
-            className="flex-1 h-full ml-2 text-sm"
-            placeholder="Tìm kiếm nhân viên"
-            placeholderTextColor="#9ca3af"
-            value={q}
-            onChangeText={setQ}
-            style={Platform.OS === 'web' ? { outline: 'none' } : {}}
-          />
-        </View>
+    // ⬇️ Container KHÔNG overflow-hidden để dropdown không bị cắt
+    <View className="bg-white rounded-xl border border-gray-200">
+      {/* strip trên */}
+      <View className="bg-gray-50 border-b border-gray-200 px-4 h-11 justify-center">
+        <Text className="text-[13px] text-gray-600">Thông báo đã gửi</Text>
       </View>
 
-      {/* table (horizontal scroll) */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator
-        contentContainerStyle={{}}
-        bounces={false}
-      >
-        <View style={{ width: TABLE_WIDTH }}>
-          <View className="border border-gray-200 rounded-lg overflow-hidden">
-            <FlatList
-              data={pageData}
-              keyExtractor={(it) => String(it.id)}
-              ListHeaderComponent={HeaderRow}
-              renderItem={({ item, index }) => (
-                <BodyRow
-                  row={item}
-                  index={(page - 1) * PAGE_SIZE + index}
-                  onPress={onRowPress}
+      <View className="p-4 pt-3">
+        {/* HÀNG 1: Title + 3 nút bên phải (zIndex cao) */}
+        <View className="flex-row items-center justify-between mb-4" style={{ zIndex: 10 }}>
+          <Text className="text-[20px] font-semibold text-slate-800 text-[#00A2B9]">App Name</Text>
+
+          <View className="flex-row items-center gap-2">
+            {/* Quản lý nhóm (dropdown) */}
+            <View className="relative" style={{ zIndex: 30 }}>
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => setGroupOpen((v) => !v)}
+                className={`h-10 px-4 rounded-md bg-white border flex-row items-center ${
+                  groupOpen ? 'border-sky-500' : 'border-gray-300'
+                }`}
+              >
+                <Text className={`text-sm mr-2 ${groupOpen ? 'text-sky-700' : 'text-gray-700'}`}>
+                  Quản lý nhóm
+                </Text>
+                <Icon
+                  name={groupOpen ? 'chevron-up' : 'chevron-down'}
+                  size={16}
+                  color={groupOpen ? '#0284c7' : '#374151'}
                 />
+              </TouchableOpacity>
+
+              {groupOpen && (
+                <>
+                  {/* backdrop để đóng menu */}
+                  <TouchableOpacity
+                    className="absolute -left-[9999px] -top-[9999px] w-[20000px] h-[20000px] z-10"
+                    activeOpacity={1}
+                    onPress={() => setGroupOpen(false)}
+                  />
+                  <View className="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-30 overflow-hidden">
+                    {[
+                      { key: 'nhom', label: 'Nhóm thông báo' },
+                      { key: 'loai', label: 'Loại thông báo' },
+                      { key: 'dsud', label: 'Danh sách ứng dụng' },
+                    ].map((it) => (
+                      <TouchableOpacity
+                        key={it.key}
+                        className="px-4 py-2.5 active:bg-gray-50"
+                        onPress={() => setGroupOpen(false)}
+                      >
+                        <Text className="text-[13px] text-gray-700">{it.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
               )}
-              stickyHeaderIndices={[0]}
-              scrollEnabled={false} // chỉ scroll theo chiều ngang ở ScrollView ngoài
-              getItemLayout={(_, index) => ({
-                length: ROW_H,
-                offset: ROW_H * index,
-                index,
-              })}
-            />
+            </View>
+
+            {/* + Thông báo mới */}
+            <TouchableOpacity
+              onPress={onCreateNew}
+              className="h-10 px-4 rounded-md justify-center"
+              style={{ backgroundColor: '#00A2B9' }} 
+              activeOpacity={0.9}
+            >
+              <Text className="text-white text-sm font-medium">+ Thông báo mới</Text>
+            </TouchableOpacity>
+
+            {/* Search */}
+            <View className="h-10 w-[260px] bg-[#f5f5f5] rounded-md flex-row items-center px-3">
+              <Icon name="search" size={16} color="#9ca3af" />
+              <TextInput
+                className="flex-1 h-full ml-2 text-sm"
+                placeholder="Tìm kiếm nhân viên"
+                placeholderTextColor="#9ca3af"
+                value={q}
+                onChangeText={setQ}
+                style={Platform.OS === 'web' ? { outline: 'none' } : {}}
+              />
+            </View>
           </View>
         </View>
-      </ScrollView>
 
-      {/* footer / pagination với << < > >> */}
-      <View className="items-center py-3">
-        <View className="flex-row items-center">
+        {/* HÀNG 2: Filter (zIndex thấp) */}
+        <View className="flex-row items-center flex-wrap gap-2 mt-1" style={{ zIndex: 1 }}>
           <TouchableOpacity
-            className="w-8 h-8 mx-1 rounded-md items-center justify-center"
-            onPress={() => setPage(1)}
-            disabled={page === 1}
+            onPress={onExport}
+            className="flex-row items-center bg-white border border-gray-300 rounded-md px-3 py-2"
           >
-            <Icon name="chevrons-left" size={16} color={page === 1 ? '#bfbfbf' : '#595959'} />
+            <Text className="mr-2 text-sm">Export</Text>
+            <Icon name="download" size={16} color="#374151" />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            className="w-8 h-8 mx-1 rounded-md items-center justify-center"
-            onPress={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1}
-          >
-            <Icon name="chevron-left" size={16} color={page === 1 ? '#bfbfbf' : '#595959'} />
-          </TouchableOpacity>
-
-          {pageWindow.map((p) => (
-            <TouchableOpacity
-              key={p}
-              onPress={() => setPage(p)}
-              className={`min-w-8 h-8 mx-1 rounded-md items-center justify-center ${
-                p === page ? 'bg-gray-200' : ''
-              }`}
-            >
-              <Text className="text-sm">{p}</Text>
-            </TouchableOpacity>
-          ))}
-
-          <TouchableOpacity
-            className="w-8 h-8 mx-1 rounded-md items-center justify-center"
-            onPress={() => setPage(Math.min(totalPages, page + 1))}
-            disabled={page === totalPages}
-          >
-            <Icon name="chevron-right" size={16} color={page === totalPages ? '#bfbfbf' : '#595959'} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="w-8 h-8 mx-1 rounded-md items-center justify-center"
-            onPress={() => setPage(totalPages)}
-            disabled={page === totalPages}
-          >
-            <Icon name="chevrons-right" size={16} color={page === totalPages ? '#bfbfbf' : '#595959'} />
-          </TouchableOpacity>
+          {['Nhóm thông báo', 'Loại thông báo', 'Loại đối tượng', 'Lịch trình thông báo'].map(
+            (t, idx) => (
+              <TouchableOpacity
+                key={idx}
+                className="flex-row items-center bg-white border border-gray-300 rounded-md px-3 py-2"
+              >
+                <Text className="mr-2 text-sm">{t}: Tất cả</Text>
+                <Icon name="chevron-down" size={16} color="#374151" />
+              </TouchableOpacity>
+            ),
+          )}
         </View>
 
-        <Text className="text-xs text-gray-500 mt-1">
-          Hiển thị {pageData.length} trong {filtered.length} kết quả
-        </Text>
+        {/* Bảng (scroll ngang) */}
+        <ScrollView horizontal showsHorizontalScrollIndicator bounces={false}>
+          <View style={{ width: TABLE_WIDTH }}>
+            <View className="mt-3 border border-gray-200 rounded-lg overflow-hidden">
+              <FlatList
+                data={pageData}
+                keyExtractor={(it) => String(it.id)}
+                ListHeaderComponent={HeaderRow}
+                renderItem={({ item, index }) => (
+                  <BodyRow
+                    row={item}
+                    index={(page - 1) * PAGE_SIZE + index}
+                    onPress={onRowPress}
+                  />
+                )}
+                scrollEnabled={false} // chỉ cuộn ngang ở ScrollView ngoài
+                getItemLayout={(_, index) => ({
+                  length: ROW_H,
+                  offset: ROW_H * index,
+                  index,
+                })}
+              />
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Phân trang */}
+        <View className="items-center py-3">
+          <View className="flex-row items-center">
+            <TouchableOpacity
+              className="w-8 h-8 mx-1 rounded-md items-center justify-center"
+              onPress={() => setPage(1)}
+              disabled={page === 1}
+            >
+              <Icon name="chevrons-left" size={16} color={page === 1 ? '#bfbfbf' : '#595959'} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-8 h-8 mx-1 rounded-md items-center justify-center"
+              onPress={() => setPage(Math.max(1, page - 1))}
+              disabled={page === 1}
+            >
+              <Icon name="chevron-left" size={16} color={page === 1 ? '#bfbfbf' : '#595959'} />
+            </TouchableOpacity>
+
+            {pageWindow.map((p) => (
+              <TouchableOpacity
+                key={p}
+                onPress={() => setPage(p)}
+                className={`min-w-8 h-8 mx-1 rounded-md items-center justify-center ${
+                  p === page ? 'bg-gray-200' : ''
+                }`}
+              >
+                <Text className="text-sm">{p}</Text>
+              </TouchableOpacity>
+            ))}
+
+            <TouchableOpacity
+              className="w-8 h-8 mx-1 rounded-md items-center justify-center"
+              onPress={() => setPage(Math.min(totalPages, page + 1))}
+              disabled={page === totalPages}
+            >
+              <Icon name="chevron-right" size={16} color={page === totalPages ? '#bfbfbf' : '#595959'} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="w-8 h-8 mx-1 rounded-md items-center justify-center"
+              onPress={() => setPage(totalPages)}
+              disabled={page === totalPages}
+            >
+              <Icon name="chevrons-right" size={16} color={page === totalPages ? '#bfbfbf' : '#595959'} />
+            </TouchableOpacity>
+          </View>
+
+          <Text className="text-xs text-gray-500 mt-1">
+            Hiển thị {pageData.length} trong {filtered.length} kết quả
+          </Text>
+        </View>
       </View>
     </View>
   );

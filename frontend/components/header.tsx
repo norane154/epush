@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';  // ✅ thêm hook này
+import { useNavigation } from '@react-navigation/native'; 
 import '../global.css';
 import { Feather, Ionicons } from '@expo/vector-icons';
 
@@ -44,7 +44,7 @@ export default function TopHeader({
                 >
                   <Feather name="chevron-left" size={16} color="#6b7280" />
                 </TouchableOpacity>
-   <View className="w-px h-full bg-slate-200 mx-6" />
+   <View className="w-px h-full bg-slate-200 ml-10" />
       <View className="ml-12 h-full justify-center items-center">
         <Text className="text-base font-semibold text-cyan-500 pb-0.5 border-b-2 border-cyan-500">
           {activeTab}
