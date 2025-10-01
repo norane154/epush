@@ -40,7 +40,7 @@ export default function TopHeader({
       <TouchableOpacity
                   onPress={handleBack}
                   activeOpacity={0.9}
-                  className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center ml-8"
+                  className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center ml-12 "
                 >
                   <Feather name="chevron-left" size={16} color="#6b7280" />
                 </TouchableOpacity>

@@ -44,34 +44,55 @@ const DUMMY_DATA = createDummyData();
 const ROW_H = 64;
 const PAGE_SIZE = 8;
 
-/* ------------ rows ------------ */
-const TableRow = ({ 
-  item, 
-  onView, 
-  onEdit, 
-  onDelete 
-}: { 
-  item: AppData; 
+/* ---- helper cột ---- */
+const Col: React.FC<{ flex: number; className?: string; children?: React.ReactNode }> = ({
+  flex,
+  className = '',
+  children,
+}) => (
+  <View style={{ flex }} className={`pr-3 ${className}`}>
+    {children}
+  </View>
+);
+
+/* ---- header ---- */
+const TableHeader = () => (
+  <View className="flex-row bg-gray-50 border-b border-gray-100 px-4 h-14 items-center">
+    <Col flex={2.5}><Text className="text-sm font-medium text-gray-800">Ứng dụng</Text></Col>
+    <Col flex={1.5}><Text className="text-sm font-medium text-gray-800">Mô tả</Text></Col>
+    <Col flex={1.5}><Text className="text-sm font-medium text-gray-800">Ngày tạo</Text></Col>
+    <Col flex={1}><Text className="text-sm font-medium text-gray-800">Người tạo</Text></Col>
+    <Col flex={1.5}><Text className="text-sm font-medium text-gray-800">Ngày sửa</Text></Col>
+    <Col flex={1}><Text className="text-sm font-medium text-gray-800">Người sửa</Text></Col>
+    <Col flex={1.5}><Text className="text-sm font-medium text-gray-800">Thao tác</Text></Col>
+  </View>
+);
+
+/* ---- row ---- */
+const TableRow = ({
+  item, onView, onEdit, onDelete,
+}: {
+  item: AppData;
   onView?: (item: AppData) => void;
   onEdit?: (item: AppData) => void;
   onDelete?: (item: AppData) => void;
 }) => (
   <View className="flex-row border-b border-gray-100 items-center px-4 h-16">
-    <View className="flex-2.5 flex-row items-center">
+    <Col flex={2.5} className="flex-row items-center">
       <View className="w-10 h-10 rounded-full bg-gray-100 mr-3" />
       <View>
-        <Text className="font-semibold text-slate-800 text-sm underline decoration-slate-300">
-          {item.name}
-        </Text>
+        <Text className="font-semibold text-gray-900 text-sm">{item.name}</Text>
         <Text className="text-gray-400 text-xs">{item.bundleId}</Text>
       </View>
-    </View>
-    <Text className="flex-1.5 text-sm text-gray-600">{item.description}</Text>
-    <Text className="flex-1.5 text-sm text-gray-600">{item.createdAt}</Text>
-    <Text className="flex-1 text-sm text-gray-600">{item.createdBy}</Text>
-    <Text className="flex-1.5 text-sm text-gray-600">{item.updatedAt}</Text>
-    <Text className="flex-1 text-sm text-gray-600">{item.updatedBy}</Text>
-    <View className="flex-1.5 flex-row justify-start items-center">
+    </Col>
+
+    <Col flex={1.5}><Text className="text-sm text-gray-600">{item.description}</Text></Col>
+    <Col flex={1.5}><Text className="text-sm text-gray-600">{item.createdAt}</Text></Col>
+    <Col flex={1}><Text className="text-sm text-gray-600">{item.createdBy}</Text></Col>
+    <Col flex={1.5}><Text className="text-sm text-gray-600">{item.updatedAt}</Text></Col>
+    <Col flex={1}><Text className="text-sm text-gray-600">{item.updatedBy}</Text></Col>
+
+    <Col flex={1.5} className="flex-row items-center">
       <TouchableOpacity className="p-1 mr-3" onPress={() => onView?.(item)}>
         <Icon name="eye" size={16} color="#6b7280" />
       </TouchableOpacity>
@@ -85,28 +106,8 @@ const TableRow = ({
   </View>
 );
 
-const TableHeader = () => (
-  <View className="flex-row bg-gray-50 border-b border-gray-100 px-4 h-14 items-center">
-    <Text className="flex-2.5 text-sm text-gray-800 font-medium">Ứng dụng</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Mô tả</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Ngày tạo</Text>
-    <Text className="flex-1 text-sm text-gray-800 font-medium">Người tạo</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Ngày sửa</Text>
-    <Text className="flex-1 text-sm text-gray-800 font-medium">Người sửa</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Thao tác</Text>
-  </View>
-);
-
-/* ------------ page jump ------------ */
-const PageJump = ({ 
-  current, 
-  total, 
-  onJump 
-}: { 
-  current: number; 
-  total: number; 
-  onJump: (page: number) => void; 
-}) => {
+/* ---- page jump ---- */
+const PageJump = ({ current, total, onJump }: { current: number; total: number; onJump: (page: number) => void }) => {
   const [open, setOpen] = useState(false);
   const pages = Array.from({ length: total }, (_, i) => i + 1);
   return (

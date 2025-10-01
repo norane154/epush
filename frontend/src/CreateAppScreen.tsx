@@ -227,7 +227,7 @@ export default function CreateAppScreen({ navigation }: any) {
                 </View>
               </Section>
 
-              {/* 2) Thiết lập Workplace */}
+
               <Section
                 title="Thiết lập Workplace"
                 icon="briefcase"
@@ -238,7 +238,7 @@ export default function CreateAppScreen({ navigation }: any) {
                 <Input value={workplace} onChangeText={setWorkplace} placeholder="Nhập workplace" />
               </Section>
 
-              {/* 3) Thiết lập server email */}
+             
               <Section
                 title="Thiết lập server email"
                 icon="mail"
