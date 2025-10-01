@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import '../global.css';
 interface TopHeaderProps {
   activeTab?: string;
   onPressAccount?: () => void;
@@ -9,7 +9,7 @@ interface TopHeaderProps {
   onPressLang?: () => void;
 }
 
-const fptLogo = require('../assets/images/fpt.png');
+const fptLogo = require('../assets/images/header.png');
 
 export default function TopHeader({
   activeTab = 'ePush',
@@ -22,11 +22,11 @@ export default function TopHeader({
       <View className="flex-row items-center">
         <Image source={fptLogo} 
 
-  className="mr-3" 
+        
  
-  style={{ width: 40, height: 32 }}
-  resizeMode="contain"  />
-        <Text className="text-blue-600 text-xs font-semibold">Information System</Text>
+      style={{ width: 150, height: 150 }}
+       resizeMode="contain"  />
+      
       </View>
 
       <View className="ml-12 h-full justify-center items-center">
