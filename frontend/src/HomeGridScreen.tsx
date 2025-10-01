@@ -6,12 +6,13 @@ import {
   Text,
   TouchableOpacity,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import TopHeader from '../components/header';
-import AppGrid from '../components/AppGird'; 
+import TopHeader from '../components/header';         
+import AppGrid from '../components/AppGird';              
 
-const BG = require('../assets/images/bg.png'); 
+const BG = require('../assets/images/bg.png');
 
 interface HomeGridScreenProps {
   navigation: any;
@@ -19,18 +20,36 @@ interface HomeGridScreenProps {
 
 export default function HomeGridScreen({ navigation }: HomeGridScreenProps) {
   const goToList = () => {
-    if (navigation.canGoBack()) navigation.goBack();
-    else navigation.reset({ index: 0, routes: [{ name: 'HomeList' }] });
+    if (navigation?.canGoBack?.()) navigation.goBack();
+    else navigation?.reset?.({ index: 0, routes: [{ name: 'Home' }] });
+  };
+
+  const onOpenApp = (item: { id: number; name: string }) => {
+    // điều hướng tùy app
+    // navigation.navigate('AppDetail', { id: item.id })
+    console.log('open app:', item.id, item.name);
+  };
+
+  const onAddApp = () => {
+  
+    navigation.navigate('CreateApp')
+    console.log('add new app');
   };
 
   return (
     <SafeAreaView className="flex-1 bg-slate-100">
-      <TopHeader activeTab="ePush" />
-      <ImageBackground source={BG} className="flex-1">
-        <View className="flex-1 bg-white">
+     
+      <TopHeader activeTab="ePush"  />
+
+      <ImageBackground source={BG} className="flex-1" resizeMode={Platform.OS === 'web' ? 'cover' : 'stretch'}>
+        <View className="flex-1 bg-white/90">
           <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
-            <View className="w-full max-w-4xl self-center px-6 pt-3">
-              
+
+            <View
+              style={{ width: '100%', maxWidth: 1120 }}
+              className="self-center px-6 pt-3"
+            >
+        
               <View className="flex-row items-center mb-2">
                 <Text className="text-lg font-bold text-gray-800 flex-1">Truy cập gần đây</Text>
                 <View className="flex-row border border-gray-200 rounded-lg overflow-hidden bg-white">
@@ -43,10 +62,12 @@ export default function HomeGridScreen({ navigation }: HomeGridScreenProps) {
                 </View>
               </View>
 
-              <AppGrid section="recent" cardWidth={230} gap={24} columns={4} />
+          
+              <AppGrid section="recent" gap={24} onOpen={onOpenApp} onAdd={onAddApp} />
 
-              <Text className="text-lg font-bold text-gray-800 mt-5">Tất cả ứng dụng</Text>
-              <AppGrid cardWidth={230} gap={24} columns={4} />
+              <Text className="text-lg font-bold text-gray-800 mt-6">Tất cả ứng dụng</Text>
+              {/* All: 4 card mỗi hàng */}
+              <AppGrid section="all" gap={24} onOpen={onOpenApp} />
             </View>
           </ScrollView>
         </View>

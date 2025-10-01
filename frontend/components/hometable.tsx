@@ -22,6 +22,7 @@ interface AppTableProps {
   onDelete?: (item: AppData) => void;
 }
 
+/* ---- dummy data ---- */
 const createDummyData = (): AppData[] => {
   const data: AppData[] = [];
   for (let i = 1; i <= 56; i++) {
@@ -38,32 +39,25 @@ const createDummyData = (): AppData[] => {
   }
   return data;
 };
-
 const DUMMY_DATA = createDummyData();
 
-const HEADER_H = 56;
 const ROW_H = 64;
 const PAGE_SIZE = 8;
 
 /* ------------ rows ------------ */
-// --- AppTable.tsx ---
-// ...giữ nguyên import & types
-
-const TableRow = ({
-  item, onView, onEdit, onDelete
-}: {
-  item: AppData;
+const TableRow = ({ 
+  item, 
+  onView, 
+  onEdit, 
+  onDelete 
+}: { 
+  item: AppData; 
   onView?: (item: AppData) => void;
   onEdit?: (item: AppData) => void;
   onDelete?: (item: AppData) => void;
 }) => (
   <View className="flex-row border-b border-gray-100 items-center px-4 h-16">
-    {/* 👇 Bấm vào khu vực avatar + name để đi qua màn chi tiết */}
-    <TouchableOpacity
-      className="flex-[2.5] flex-row items-center"
-      activeOpacity={0.85}
-      onPress={() => onView?.(item)}
-    >
+    <View className="flex-2.5 flex-row items-center">
       <View className="w-10 h-10 rounded-full bg-gray-100 mr-3" />
       <View>
         <Text className="font-semibold text-slate-800 text-sm underline decoration-slate-300">
@@ -71,15 +65,13 @@ const TableRow = ({
         </Text>
         <Text className="text-gray-400 text-xs">{item.bundleId}</Text>
       </View>
-    </TouchableOpacity>
-
-    <View className="flex-[1.5]"><Text className="text-sm text-gray-600">{item.description}</Text></View>
-    <View className="flex-[1.5]"><Text className="text-sm text-gray-600">{item.createdAt}</Text></View>
-    <View className="flex-[1]"><Text className="text-sm text-gray-600">{item.createdBy}</Text></View>
-    <View className="flex-[1.5]"><Text className="text-sm text-gray-600">{item.updatedAt}</Text></View>
-    <View className="flex-[1]"><Text className="text-sm text-gray-600">{item.updatedBy}</Text></View>
-
-    <View className="flex-[1.5] flex-row items-center">
+    </View>
+    <Text className="flex-1.5 text-sm text-gray-600">{item.description}</Text>
+    <Text className="flex-1.5 text-sm text-gray-600">{item.createdAt}</Text>
+    <Text className="flex-1 text-sm text-gray-600">{item.createdBy}</Text>
+    <Text className="flex-1.5 text-sm text-gray-600">{item.updatedAt}</Text>
+    <Text className="flex-1 text-sm text-gray-600">{item.updatedBy}</Text>
+    <View className="flex-1.5 flex-row justify-start items-center">
       <TouchableOpacity className="p-1 mr-3" onPress={() => onView?.(item)}>
         <Icon name="eye" size={16} color="#6b7280" />
       </TouchableOpacity>
@@ -89,22 +81,21 @@ const TableRow = ({
       <TouchableOpacity className="p-1" onPress={() => onDelete?.(item)}>
         <Icon name="trash" size={16} color="#ef4444" />
       </TouchableOpacity>
-    </View>
+    </Col>
   </View>
 );
 
 const TableHeader = () => (
   <View className="flex-row bg-gray-50 border-b border-gray-100 px-4 h-14 items-center">
-    <View className="flex-[2.5]"><Text className="text-sm text-gray-800 font-medium">Ứng dụng</Text></View>
-    <View className="flex-[1.5]"><Text className="text-sm text-gray-800 font-medium">Mô tả</Text></View>
-    <View className="flex-[1.5]"><Text className="text-sm text-gray-800 font-medium">Ngày tạo</Text></View>
-    <View className="flex-[1]"><Text className="text-sm text-gray-800 font-medium">Người tạo</Text></View>
-    <View className="flex-[1.5]"><Text className="text-sm text-gray-800 font-medium">Ngày sửa</Text></View>
-    <View className="flex-[1]"><Text className="text-sm text-gray-800 font-medium">Người sửa</Text></View>
-    <View className="flex-[1.5] "><Text className="text-sm text-gray-800 font-medium">Thao tác</Text></View>
+    <Text className="flex-2.5 text-sm text-gray-800 font-medium">Ứng dụng</Text>
+    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Mô tả</Text>
+    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Ngày tạo</Text>
+    <Text className="flex-1 text-sm text-gray-800 font-medium">Người tạo</Text>
+    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Ngày sửa</Text>
+    <Text className="flex-1 text-sm text-gray-800 font-medium">Người sửa</Text>
+    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Thao tác</Text>
   </View>
 );
-
 
 /* ------------ page jump ------------ */
 const PageJump = ({ 
@@ -120,7 +111,7 @@ const PageJump = ({
   const pages = Array.from({ length: total }, (_, i) => i + 1);
   return (
     <View className="relative ml-2">
-      <TouchableOpacity 
+      <TouchableOpacity
         className="flex-row items-center border border-gray-300 rounded-md py-2 px-2.5"
         onPress={() => setOpen((v) => !v)}
       >
@@ -128,41 +119,24 @@ const PageJump = ({
         <Icon name={open ? 'chevron-up' : 'chevron-down'} size={16} color="#595959" />
       </TouchableOpacity>
       {open && (
-        <>
-          <TouchableOpacity 
-            className="absolute -left-9999 -top-9999 w-20000 h-20000 z-10"
-            activeOpacity={1} 
-            onPress={() => setOpen(false)} 
-          />
-          <View className="absolute top-11 right-0 bg-white border border-gray-200 rounded-lg min-w-30 overflow-hidden shadow-lg z-20">
-            {pages.map((p) => (
-              <TouchableOpacity
-                key={p}
-                className={`py-2.5 px-3 ${p === current ? 'bg-blue-50' : ''}`}
-                onPress={() => { onJump(p); setOpen(false); }}
-              >
-                <Text className={`text-sm ${p === current ? 'text-gray-800 font-semibold' : 'text-gray-700'}`}>
-                  {p}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </>
+        <View className="absolute top-11 right-0 bg-white border border-gray-200 rounded-lg min-w-30 overflow-hidden shadow-lg z-20">
+          {pages.map((p) => (
+            <TouchableOpacity
+              key={p}
+              className={`py-2.5 px-3 ${p === current ? 'bg-blue-50' : ''}`}
+              onPress={() => { onJump(p); setOpen(false); }}
+            >
+              <Text className={`text-sm ${p === current ? 'text-gray-800 font-semibold' : 'text-gray-700'}`}>{p}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       )}
     </View>
   );
 };
 
-/* ------------ pagination ------------ */
-const Pagination = ({ 
-  currentPage, 
-  totalPages, 
-  onPageChange 
-}: { 
-  currentPage: number; 
-  totalPages: number; 
-  onPageChange: (page: number) => void; 
-}) => {
+/* ---- pagination ---- */
+const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: number; totalPages: number; onPageChange: (page: number) => void }) => {
   const MAX = 5;
   let start = Math.max(1, currentPage - Math.floor(MAX / 2));
   let end = Math.min(totalPages, start + MAX - 1);
@@ -171,33 +145,21 @@ const Pagination = ({
 
   return (
     <View className="flex-row items-center">
-      <TouchableOpacity
-        onPress={() => onPageChange(Math.max(1, currentPage - 1))}
-        disabled={currentPage === 1}
-        className="w-8 h-8 justify-center items-center"
-      >
+      <TouchableOpacity onPress={() => onPageChange(Math.max(1, currentPage - 1))} disabled={currentPage === 1} className="w-8 h-8 justify-center items-center">
         <Icon name="chevron-left" size={18} color={currentPage === 1 ? '#bfbfbf' : '#595959'} />
       </TouchableOpacity>
 
       {pages.map((p) => (
         <TouchableOpacity
           key={p}
-          className={`min-w-8 h-8 rounded-md justify-center items-center mx-1 ${
-            currentPage === p ? 'bg-slate-400' : ''
-          }`}
+          className={`min-w-8 h-8 rounded-md justify-center items-center mx-1 ${currentPage === p ? 'bg-slate-400' : ''}`}
           onPress={() => onPageChange(p)}
         >
-          <Text className={`text-sm ${currentPage === p ? 'text-white' : 'text-gray-800'}`}>
-            {p}
-          </Text>
+          <Text className={`text-sm ${currentPage === p ? 'text-white' : 'text-gray-800'}`}>{p}</Text>
         </TouchableOpacity>
       ))}
 
-      <TouchableOpacity
-        onPress={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-        disabled={currentPage === totalPages}
-        className="w-8 h-8 justify-center items-center"
-      >
+      <TouchableOpacity onPress={() => onPageChange(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} className="w-8 h-8 justify-center items-center">
         <Icon name="chevron-right" size={18} color={currentPage === totalPages ? '#bfbfbf' : '#595959'} />
       </TouchableOpacity>
 
@@ -206,6 +168,7 @@ const Pagination = ({
   );
 };
 
+/* ---- main table ---- */
 export default function AppTable({ onAdd, onView, onEdit, onDelete }: AppTableProps) {
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
@@ -213,9 +176,7 @@ export default function AppTable({ onAdd, onView, onEdit, onDelete }: AppTablePr
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return DUMMY_DATA;
-    return DUMMY_DATA.filter(
-      (x) => x.name.toLowerCase().includes(s) || x.bundleId.toLowerCase().includes(s),
-    );
+    return DUMMY_DATA.filter((x) => x.name.toLowerCase().includes(s) || x.bundleId.toLowerCase().includes(s));
   }, [q]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
