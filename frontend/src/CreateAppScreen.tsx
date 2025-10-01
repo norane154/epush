@@ -1,426 +1,340 @@
-import React, { useState } from 'react';
+// screens/CreateAppScreen.tsx
+import React, { useRef, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
   View,
   Text,
-  TouchableOpacity,
   TextInput,
+  TouchableOpacity,
+  Platform, 
+  Switch,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import TopHeader from '../components/header';
-import Sidebar from '../components/Sidebar';
+import Feather from 'react-native-vector-icons/Feather';
 
-interface ServerConfig {
-  id: number;
-  ip: string;
-  port: string;
-  name: string;
-  emailList: string[];
-  username: string;
-  password: string;
-}
+import TopHeader from '../components/header'; // dùng header bạn đã tạo
 
-interface FormData {
-  appName: string;
-  description: string;
-  appImage: string;
-  serviceFile: string;
-  chatbotWorkplace: string;
-  serverConfigs: ServerConfig[];
-}
+/* ---------- helpers ---------- */
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <Text className="text-sm text-gray-600 mb-1">{children}</Text>
+);
 
-interface CreateAppScreenProps {
-  navigation: any;
-}
+const Input = (props: React.ComponentProps<typeof TextInput>) => (
+  <TextInput
+    {...props}
+    className={`h-10 rounded-md border border-gray-200 bg-white px-3 text-sm text-gray-800 ${
+      props.multiline ? 'h-24 py-2' : ''
+    }`}
+    placeholderTextColor="#bfbfbf"
+    style={Platform.OS === 'web' ? { outline: 'none' } : undefined}
+  />
+);
 
-export default function CreateAppScreen({ navigation }: CreateAppScreenProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeSection, setActiveSection] = useState('thong-bao');
-  const [activeSubSection, setActiveSubSection] = useState('tao-moi-ung-dung');
-  const [activeTab, setActiveTab] = useState('workplace');
-  const [formData, setFormData] = useState<FormData>({
-    appName: '2.1',
-    description: '',
-    appImage: '/images/application.png',
-    serviceFile: '',
-    chatbotWorkplace: '2.1',
-    serverConfigs: [
-      {
-        id: 1,
-        ip: '2.1.1.2',
-        port: '2.1',
-        name: 'conchimnon',
-        emailList: ['ChungTa@fpt.com.vn'],
-        username: '',
-        password: '',
-      }
-    ],
-  });
+const UploadField = ({
+  label,
+  value,
+  onPick,
+}: {
+  label: string;
+  value?: string;
+  onPick?: () => void;
+}) => (
+  <View className="mb-4">
+    <Label>{label}</Label>
+    <View className="flex-row items-center">
+      <Input editable={false} value={value} placeholder="/images/appicon.png" className="flex-1" />
+      <TouchableOpacity
+        onPress={onPick}
+        className="ml-2 w-10 h-10 border border-gray-200 rounded-md items-center justify-center"
+      >
+        <Feather name="upload" size={16} color="#6b7280" />
+      </TouchableOpacity>
+    </View>
+  </View>
+);
 
-  const handleSectionChange = (section: string, subSection?: string) => {
-    setActiveSection(section);
-    if (subSection) {
-      setActiveSubSection(subSection);
-    }
+const Section = ({
+  title,
+  icon = 'settings',
+  children,
+  defaultOpen = true,
+  onLayout,
+}: {
+  title: string;
+  icon?: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  onLayout?: (y: number) => void;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <View
+      className="bg-white rounded-lg border border-gray-200 mb-4 overflow-hidden"
+      onLayout={(e) => onLayout?.(e.nativeEvent.layout.y)}
+    >
+      <TouchableOpacity
+        onPress={() => setOpen((v) => !v)}
+        activeOpacity={0.9}
+        className="flex-row items-center justify-between px-4 py-3"
+      >
+        <View className="flex-row items-center">
+          <Feather name={icon as any} size={16} color="#6b7280" />
+          <Text className="ml-2 font-semibold text-gray-800">{title}</Text>
+        </View>
+        <Feather name={open ? 'chevron-up' : 'chevron-down'} size={18} color="#6b7280" />
+      </TouchableOpacity>
+      {open && <View className="px-4 pb-4">{children}</View>}
+    </View>
+  );
+};
+
+type EmailChip = { id: string; value: string };
+
+/* ---------- screen ---------- */
+export default function CreateAppScreen({ navigation }: any) {
+  // anchor refs for quick nav
+  const scrollRef = useRef<ScrollView>(null);
+  const yWorkplace = useRef(0);
+  const yServer = useRef(0);
+
+  // form states
+  const [appName, setAppName] = useState('');
+  const [appCode, setAppCode] = useState('');
+  const [appDesc, setAppDesc] = useState('');
+  const [shortName, setShortName] = useState('');
+  const [logoPath, setLogoPath] = useState('');
+  const [faviconPath, setFaviconPath] = useState('');
+
+  const [workplace, setWorkplace] = useState('');
+
+  const [serverOn, setServerOn] = useState(true);
+  const [ip, setIp] = useState('');
+  const [port, setPort] = useState('');
+  const [service, setService] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [emails, setEmails] = useState<EmailChip[]>([{ id: '1', value: 'chungnt@fpt.com.vn' }]);
+
+  const addEmail = () => {
+    const v = emailInput.trim();
+    if (!v) return;
+    setEmails((s) => [...s, { id: String(Date.now()), value: v }]);
+    setEmailInput('');
   };
+  const removeEmail = (id: string) => setEmails((s) => s.filter((x) => x.id !== id));
 
-  const handleAppChange = () => {
-    console.log('Change app');
-  };
-
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleServerConfigChange = (index: number, field: keyof ServerConfig, value: string) => {
-    const newConfigs = [...formData.serverConfigs];
-    newConfigs[index] = {
-      ...newConfigs[index],
-      [field]: value
+  const onSave = () => {
+    const payload = {
+      app: { appName, appCode, appDesc, shortName, logoPath, faviconPath },
+      workplace: { value: workplace },
+      emailServer: { serverOn, ip, port, service, username, password, emails: emails.map((e) => e.value) },
     };
-    setFormData(prev => ({
-      ...prev,
-      serverConfigs: newConfigs
-    }));
+    console.log('SAVE', payload);
+    // TODO: gọi API của bạn tại đây
   };
 
-  const handleAddEmail = (configIndex: number) => {
-    const newConfigs = [...formData.serverConfigs];
-    newConfigs[configIndex].emailList.push('');
-    setFormData(prev => ({
-      ...prev,
-      serverConfigs: newConfigs
-    }));
+  const onReset = () => {
+    setAppName('');
+    setAppCode('');
+    setAppDesc('');
+    setShortName('');
+    setLogoPath('');
+    setFaviconPath('');
+    setWorkplace('');
+    setServerOn(true);
+    setIp('');
+    setPort('');
+    setService('');
+    setUsername('');
+    setPassword('');
+    setEmailInput('');
+    setEmails([{ id: '1', value: 'chungnt@fpt.com.vn' }]);
   };
 
-  const handleRemoveEmail = (configIndex: number, emailIndex: number) => {
-    const newConfigs = [...formData.serverConfigs];
-    newConfigs[configIndex].emailList.splice(emailIndex, 1);
-    setFormData(prev => ({
-      ...prev,
-      serverConfigs: newConfigs
-    }));
-  };
-
-  const handleEmailChange = (configIndex: number, emailIndex: number, value: string) => {
-    const newConfigs = [...formData.serverConfigs];
-    newConfigs[configIndex].emailList[emailIndex] = value;
-    setFormData(prev => ({
-      ...prev,
-      serverConfigs: newConfigs
-    }));
-  };
-
-  const handleAddServerConfig = () => {
-    const newConfig: ServerConfig = {
-      id: Date.now(),
-      ip: '',
-      port: '',
-      name: '',
-      emailList: [],
-      username: '',
-      password: '',
-    };
-    setFormData(prev => ({
-      ...prev,
-      serverConfigs: [...prev.serverConfigs, newConfig]
-    }));
-  };
-
-  const handleSave = () => {
-    console.log('Save app', formData);
-    navigation.goBack();
-  };
-
-  const handleReset = () => {
-    setFormData({
-      appName: '2.1',
-      description: '',
-      appImage: '/images/application.png',
-      serviceFile: '',
-      chatbotWorkplace: '2.1',
-      serverConfigs: [
-        {
-          id: 1,
-          ip: '2.1.1.2',
-          port: '2.1',
-          name: 'conchimnon',
-          emailList: ['ChungTa@fpt.com.vn'],
-          username: '',
-          password: '',
-        }
-      ],
-    });
-  };
+  const goToY = (y: number) => scrollRef.current?.scrollTo({ y, animated: true });
+  const onScroll = (_e: NativeSyntheticEvent<NativeScrollEvent>) => {};
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
-      <TopHeader 
-        activeTab="ePush" 
-        onNotifications={() => console.log('Notifications')}
-        onPressAccount={() => console.log('Account')}
-        onPressLang={() => console.log('Language')}
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <TopHeader
+        activeTab="ePush"
+        showBack
+        breadcrumbs={[
+          { label: 'ePush', onPress: () => navigation.navigate('Home') },
+          { label: 'Tạo mới ứng dụng' },
+        ]}
       />
-      <View className="flex-1 flex-row">
-        <Sidebar
-          activeSection={activeSection}
-          activeSubSection={activeSubSection}
-          onSectionChange={handleSectionChange}
-          onAppChange={handleAppChange}
-          collapsed={sidebarCollapsed}
-        />
-        <View className="flex-1 bg-gray-100">
-          <ScrollView>
-            <View className="p-6">
-              {/* Breadcrumbs */}
-              <View className="mb-4">
-                <Text className="text-sm text-gray-500">ePush / Tạo mới ứng dụng</Text>
-              </View>
 
-              {/* Page Title */}
-              <Text className="text-2xl font-bold text-gray-800 mb-6">tạo mới ứng dụng</Text>
+      <ScrollView ref={scrollRef} onScroll={onScroll} contentContainerStyle={{ paddingBottom: 28 }}>
+        {/* container middle */}
+        <View className="w-full self-center px-4 md:px-6" style={{ maxWidth: 1120 }}>
+          {/* card wrapper */}
+          <View className="bg-white rounded-xl border border-gray-200 mt-4 overflow-hidden">
+            {/* title + quick nav */}
+            <View className="px-4 md:px-6 py-4 border-b border-gray-100">
+              <Text className="text-lg font-semibold text-gray-800">Tạo mới ứng dụng</Text>
 
-              {/* Application Setup Section */}
-              <View className="mb-8">
-                <Text className="text-lg font-semibold text-gray-800 mb-6">Thiết lập ứng dụng</Text>
-                
-                {/* Tabs */}
-                <View className="flex-row mb-6 bg-gray-100 rounded-lg p-1">
-                  <TouchableOpacity
-                    className={`flex-1 py-3 px-4 rounded-md items-center ${
-                      activeTab === 'workplace' ? 'bg-white shadow-sm' : ''
-                    }`}
-                    onPress={() => setActiveTab('workplace')}
-                  >
-                    <Text className={`text-sm font-medium ${
-                      activeTab === 'workplace' ? 'text-gray-800' : 'text-gray-500'
-                    }`}>
-                      Thiết lập Workplace
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className={`flex-1 py-3 px-4 rounded-md items-center ${
-                      activeTab === 'email' ? 'bg-white shadow-sm' : ''
-                    }`}
-                    onPress={() => setActiveTab('email')}
-                  >
-                    <Text className={`text-sm font-medium ${
-                      activeTab === 'email' ? 'text-gray-800' : 'text-gray-500'
-                    }`}>
-                      Thiết lập Server Email
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Form Fields */}
-                <View className="bg-white rounded-lg p-6">
-                  <View className="mb-5">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">Tên ứng dụng</Text>
-                    <TextInput
-                      className="flex-1 h-10 text-sm text-gray-700"
-                      value={formData.appName}
-                      onChangeText={(value) => handleInputChange('appName', value)}
-                    />
-                  </View>
-
-                  <View className="mb-5">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">Mô tả</Text>
-                    <TextInput
-                      className="h-20 border border-gray-300 rounded-md p-3 text-sm text-gray-700"
-                      placeholder="Nhập tại đây"
-                      value={formData.description}
-                      onChangeText={(value) => handleInputChange('description', value)}
-                      multiline
-                      numberOfLines={3}
-                    />
-                  </View>
-
-                  <View className="mb-5">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">Tải ảnh ứng dụng lên đây</Text>
-                    <View className="flex-row items-center border border-gray-300 rounded-md px-3 py-3">
-                      <Text className="flex-1 text-sm text-gray-500">{formData.appImage}</Text>
-                      <TouchableOpacity className="p-1">
-                        <Ionicons name="arrow-up" size={16} color="#6b7280" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  <View className="mb-5">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">File dịch vụ</Text>
-                    <View className="flex-row items-center border border-gray-300 rounded-md px-3 py-3">
-                      <Text className="flex-1 text-sm text-gray-500">Tải file dịch vụ ở đây</Text>
-                      <TouchableOpacity className="p-1">
-                        <Ionicons name="arrow-up" size={16} color="#6b7280" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              {/* Workplace Setup */}
-              <View className="mb-8">
-                <View className="flex-row items-center mb-4">
-                  <Ionicons name="at" size={16} color="#6b7280" />
-                  <Text className="text-lg font-semibold text-gray-800 ml-2">Thiết lập Workplace</Text>
-                </View>
-                <View className="bg-white rounded-lg p-6">
-                  <View className="mb-5">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">Chatbot Workplace</Text>
-                    <TextInput
-                      className="flex-1 h-10 text-sm text-gray-700"
-                      value={formData.chatbotWorkplace}
-                      onChangeText={(value) => handleInputChange('chatbotWorkplace', value)}
-                    />
-                  </View>
-                </View>
-              </View>
-
-              {/* Server Email Setup */}
-              <View className="mb-8">
-                <View className="flex-row items-center mb-4">
-                  <Ionicons name="mail" size={16} color="#6b7280" />
-                  <Text className="text-lg font-semibold text-gray-800 ml-2">Thiết lập server email</Text>
-                </View>
-                <View className="bg-white rounded-lg p-6">
-                  {/* Server Configuration Numbers */}
-                  <View className="flex-row items-center mb-6">
-                    {formData.serverConfigs.map((config, index) => (
-                      <TouchableOpacity
-                        key={config.id}
-                        className={`w-8 h-8 rounded-full justify-center items-center mr-2 ${
-                          index === 0 ? 'bg-blue-500' : 'bg-gray-200'
-                        }`}
-                      >
-                        <Text className={`text-sm font-semibold ${
-                          index === 0 ? 'text-white' : 'text-gray-500'
-                        }`}>
-                          {index + 1}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                    <TouchableOpacity
-                      className="w-8 h-8 rounded-full bg-gray-100 justify-center items-center border border-gray-300"
-                      onPress={handleAddServerConfig}
-                    >
-                      <Ionicons name="add" size={16} color="#6b7280" />
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Server Configuration Form */}
-                  {formData.serverConfigs.map((config, configIndex) => (
-                    <View key={config.id} className="mb-6">
-                      <View className="flex-row mb-5">
-                        <View className="flex-1 mr-3">
-                          <Text className="text-sm font-medium text-gray-700 mb-2">IP</Text>
-                          <View className="flex-row items-center border border-gray-300 rounded-md px-3">
-                            <TextInput
-                              className="flex-1 h-10 text-sm text-gray-700"
-                              value={config.ip}
-                              onChangeText={(value) => handleServerConfigChange(configIndex, 'ip', value)}
-                            />
-                            <Ionicons name="chevron-down" size={16} color="#6b7280" />
-                          </View>
-                        </View>
-                        <View className="flex-1">
-                          <Text className="text-sm font-medium text-gray-700 mb-2">Port</Text>
-                          <View className="flex-row items-center border border-gray-300 rounded-md px-3">
-                            <TextInput
-                              className="flex-1 h-10 text-sm text-gray-700"
-                              value={config.port}
-                              onChangeText={(value) => handleServerConfigChange(configIndex, 'port', value)}
-                            />
-                            <Ionicons name="chevron-down" size={16} color="#6b7280" />
-                          </View>
-                        </View>
-                      </View>
-
-                      <View className="mb-5">
-                        <Text className="text-sm font-medium text-gray-700 mb-2">Tên</Text>
-                        <View className="flex-row items-center border border-gray-300 rounded-md px-3">
-                          <TextInput
-                            className="flex-1 h-10 text-sm text-gray-700"
-                            value={config.name}
-                            onChangeText={(value) => handleServerConfigChange(configIndex, 'name', value)}
-                          />
-                          <Ionicons name="chevron-down" size={16} color="#6b7280" />
-                        </View>
-                      </View>
-
-                      <View className="mb-5">
-                        <Text className="text-sm font-medium text-gray-700 mb-2">Email List</Text>
-                        <View className="mt-2">
-                          {config.emailList.map((email, emailIndex) => (
-                            <View key={emailIndex} className="flex-row items-center mb-2">
-                              <TextInput
-                                className="flex-1 h-10 border border-gray-300 rounded-md px-3 text-sm text-gray-700 mr-2"
-                                value={email}
-                                onChangeText={(value) => handleEmailChange(configIndex, emailIndex, value)}
-                              />
-                              <TouchableOpacity
-                                className="p-2"
-                                onPress={() => handleRemoveEmail(configIndex, emailIndex)}
-                              >
-                                <Ionicons name="close" size={16} color="#ef4444" />
-                              </TouchableOpacity>
-                            </View>
-                          ))}
-                          <TouchableOpacity
-                            className="flex-row items-center py-2"
-                            onPress={() => handleAddEmail(configIndex)}
-                          >
-                            <Ionicons name="add" size={16} color="#3b82f6" />
-                            <Text className="ml-1 text-sm text-blue-500 font-medium">+ Thêm email</Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-
-                      <View className="flex-row">
-                        <View className="flex-1 mr-3">
-                          <Text className="text-sm font-medium text-gray-700 mb-2">Username</Text>
-                          <TextInput
-                            className="h-10 border border-gray-300 rounded-md px-3 text-sm text-gray-700"
-                            value={config.username}
-                            onChangeText={(value) => handleServerConfigChange(configIndex, 'username', value)}
-                          />
-                        </View>
-                        <View className="flex-1">
-                          <Text className="text-sm font-medium text-gray-700 mb-2">Password</Text>
-                          <TextInput
-                            className="h-10 border border-gray-300 rounded-md px-3 text-sm text-gray-700"
-                            value={config.password}
-                            onChangeText={(value) => handleServerConfigChange(configIndex, 'password', value)}
-                            secureTextEntry
-                          />
-                        </View>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              </View>
-
-              {/* Action Buttons */}
-              <View className="flex-row justify-end gap-3">
-                <TouchableOpacity 
-                  className="px-6 py-3 rounded-md border border-gray-300 bg-white"
-                  onPress={handleReset}
+              <View className="flex-row mt-3">
+                <TouchableOpacity
+                  onPress={() => goToY(yWorkplace.current)}
+                  className="mr-2 bg-cyan-50 border border-cyan-200 text-cyan-700 rounded-full px-3 py-1.5"
                 >
-                  <Text className="text-sm text-gray-500">Đặt lại</Text>
+                  <Text className="text-xs text-cyan-700">Thiết lập Workplace</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                  className="px-6 py-3 rounded-md bg-blue-500"
-                  onPress={handleSave}
+
+                <TouchableOpacity
+                  onPress={() => goToY(yServer.current)}
+                  className="bg-cyan-50 border border-cyan-200 text-cyan-700 rounded-full px-3 py-1.5"
                 >
-                  <Text className="text-sm font-medium text-white">Lưu</Text>
+                  <Text className="text-xs text-cyan-700">Thiết lập Server Email</Text>
                 </TouchableOpacity>
               </View>
             </View>
-          </ScrollView>
+
+            {/* body */}
+            <View className="px-4 md:px-6 py-5">
+              {/* 1) Thiết lập ứng dụng */}
+              <Section title="Thiết lập ứng dụng" icon="settings" defaultOpen>
+                <View className="mb-4">
+                  <Label>Tên ứng dụng</Label>
+                  <Input value={appName} onChangeText={setAppName} placeholder="Ví dụ: ePush" />
+                </View>
+
+                <View className="mb-4">
+                  <Label>Mã số</Label>
+                  <Input value={appCode} onChangeText={setAppCode} placeholder="Nhập mã số" />
+                </View>
+
+                <View className="mb-4">
+                  <Label>Mô tả</Label>
+                  <Input
+                    value={appDesc}
+                    onChangeText={setAppDesc}
+                    placeholder="Mô tả ứng dụng"
+                    multiline
+                  />
+                </View>
+
+                <UploadField label="Tải ảnh ứng dụng (logo)" value={logoPath} onPick={() => setLogoPath('/images/appicon.png')} />
+                <UploadField label="Favicon" value={faviconPath} onPick={() => setFaviconPath('/images/favicon.png')} />
+
+                <View>
+                  <Label>Tên viết tắt</Label>
+                  <Input value={shortName} onChangeText={setShortName} placeholder="VD: eP" />
+                </View>
+              </Section>
+
+              {/* 2) Thiết lập Workplace */}
+              <Section
+                title="Thiết lập Workplace"
+                icon="briefcase"
+                defaultOpen
+                onLayout={(y) => (yWorkplace.current = y)}
+              >
+                <Label>Outlook Workplace</Label>
+                <Input value={workplace} onChangeText={setWorkplace} placeholder="Nhập workplace" />
+              </Section>
+
+              {/* 3) Thiết lập server email */}
+              <Section
+                title="Thiết lập server email"
+                icon="mail"
+                defaultOpen
+                onLayout={(y) => (yServer.current = y)}
+              >
+                <View className="flex-row items-center mb-3">
+                  <Text className="text-gray-700 mr-3">Bật</Text>
+                  <Switch value={serverOn} onValueChange={setServerOn} />
+                </View>
+
+                <View className="mb-4">
+                  <Label>IP</Label>
+                  <Input value={ip} onChangeText={setIp} placeholder="2.1.1.2" />
+                </View>
+
+                <View className="mb-4">
+                  <Label>Port</Label>
+                  <Input value={port} onChangeText={setPort} placeholder="21" />
+                </View>
+
+                <View className="mb-4">
+                  <Label>Tên dịch vụ</Label>
+                  <Input value={service} onChangeText={setService} placeholder="service-name" />
+                </View>
+
+                {/* email chips */}
+                <View className="mb-4">
+                  <Label>Emails nhận</Label>
+
+                  <View className="flex-row flex-wrap mb-2">
+                    {emails.map((e) => (
+                      <View
+                        key={e.id}
+                        className="flex-row items-center bg-gray-100 rounded-full px-2 py-1 mr-2 mb-2"
+                      >
+                        <Text className="text-xs text-gray-700 mr-1">{e.value}</Text>
+                        <TouchableOpacity onPress={() => removeEmail(e.id)}>
+                          <Feather name="x" size={12} color="#6b7280" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+
+                  <View className="flex-row">
+                    <Input
+                      value={emailInput}
+                      onChangeText={setEmailInput}
+                      placeholder="nhập email..."
+                      className="flex-1"
+                    />
+                    <TouchableOpacity
+                      onPress={addEmail}
+                      className="ml-2 h-10 px-3 rounded-md bg-gray-100 border border-gray-200 items-center justify-center"
+                    >
+                      <Text className="text-sm text-gray-700">+ Thêm email</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <View className="mb-4">
+                  <Label>Username</Label>
+                  <Input value={username} onChangeText={setUsername} placeholder="username" />
+                </View>
+
+                <View>
+                  <Label>Password</Label>
+                  <Input
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="••••••••"
+                    secureTextEntry
+                  />
+                </View>
+              </Section>
+
+              {/* footer buttons */}
+              <View className="flex-row justify-end items-center mt-4">
+                <TouchableOpacity
+                  onPress={onReset}
+                  className="h-10 px-4 rounded-md bg-gray-100 border border-gray-200 items-center justify-center mr-2"
+                >
+                  <Text className="text-sm text-gray-700">Đặt lại</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={onSave}
+                  className="h-10 px-4 rounded-md bg-cyan-500 items-center justify-center"
+                >
+                  <Text className="text-sm text-white font-medium">Lưu</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

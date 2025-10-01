@@ -11,10 +11,10 @@ interface HomeScreenProps {
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
-      <TopHeader activeTab="ePush" />
+      <TopHeader activeTab="ePush"  />
       <ScrollView>
         <View className="flex-1 p-6">
-          <View className="w-full bg-white rounded-lg p-6 border border-gray-200">
+          <View className="w-full bg-white rounded-lg p-6 border border-gray-200 ">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-xl font-medium text-gray-800">Danh sách ứng dụng</Text>
               <View className="flex-row border border-gray-300 rounded-lg overflow-hidden">
