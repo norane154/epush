@@ -1,79 +1,160 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 interface SidebarProps {
+  appName?: string;
   activeSection: string;
-  activeSubSection: string;
+  activeSubSection?: string;
   onSectionChange: (section: string, subSection?: string) => void;
-  onAppChange: () => void;
-  collapsed?: boolean;
+  onAppChange?: () => void;
+  onBack?: () => void;
 }
 
-export default function Sidebar({
+type Sub = { key: string; label: string };
+type Section = { key: string; label: string; icon: keyof typeof Ionicons.glyphMap; subs?: Sub[] };
+
+const SECTIONS: Section[] = [
+  {
+    key: 'thong-bao',
+    label: 'Thông báo',
+    icon: 'notifications-outline',
+    subs: [
+      { key: 'da-gui', label: 'Đã gửi' },
+      { key: 'da-len-lich', label: 'Đã lên lịch' },
+      { key: 'luu-nhap', label: 'Lưu nháp' },
+      { key: 'tu-dong', label: 'Tự động' },
+      { key: 'danh-sach-nguoi-dung', label: 'Danh sách người dùng' },
+    ],
+  },
+  {
+    key: 'cau-hinh',
+    label: 'Cấu hình',
+    icon: 'construct-outline',
+    subs: [
+      { key: 'bieu-mau', label: 'Biểu mẫu' },
+      { key: 'danh-muc', label: 'Danh mục' },
+    ],
+  },
+  { key: 'tai-khoan', label: 'Tài khoản', icon: 'person-outline' },
+];
+
+export default function SidebarBody({
+  appName = 'App Name',
   activeSection,
   activeSubSection,
   onSectionChange,
   onAppChange,
-  collapsed = false,
+  onBack,
 }: SidebarProps) {
-  if (collapsed) {
-    return (
-      <View className="w-16 bg-white border-r border-gray-200">
-        <View className="p-4">
-          <TouchableOpacity className="w-8 h-8 bg-gray-100 rounded-lg items-center justify-center">
-            <Ionicons name="menu" size={20} color="#6b7280" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
+  const navigation = useNavigation<any>();   
+  const [open, setOpen] = useState<Record<string, boolean>>({ [activeSection]: true });
+  const toggle = (k: string) => setOpen((s) => ({ ...s, [k]: !s[k] }));
+  
+   const handleBack = () => {
+    // Nếu cha truyền onBack thì dùng; không thì về HomeTable
+    if (onBack) return onBack();
+    navigation.navigate('HomeTable');                // 👈 ĐỔI tên route nếu bạn đặt khác
+    // hoặc muốn không chồng stack:
+    // navigation.reset({ index: 0, routes: [{ name: 'HomeTable' }] });
+  };
 
   return (
-    <View className="w-64 bg-white border-r border-gray-200">
-      <View className="p-4">
-        <Text className="text-lg font-semibold text-gray-800 mb-6">Menu</Text>
-        
-        <View className="space-y-2">
-          <TouchableOpacity
-            className={`p-3 rounded-lg ${
-              activeSection === 'thong-bao' ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-            }`}
-            onPress={() => onSectionChange('thong-bao', 'tao-moi-ung-dung')}
-          >
-            <Text className={`font-medium ${
-              activeSection === 'thong-bao' ? 'text-blue-600' : 'text-gray-700'
-            }`}>
-              Thông báo
-            </Text>
-          </TouchableOpacity>
+    <View className="w-72 bg-white border-r border-gray-200 relative">
+      {/* Nút Back */}
+      <TouchableOpacity
+        onPress={handleBack}                         // 👈 dùng handleBack
+        className="absolute top-2 right-3 w-9 h-9 rounded-full bg-gray-100 items-center justify-center z-10"
+        activeOpacity={0.85}
+      >
+        <Ionicons name="chevron-back-outline" size={20} color="#6b7280" />
+      </TouchableOpacity>
 
-          <TouchableOpacity
-            className={`p-3 rounded-lg ${
-              activeSection === 'quan-ly' ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-            }`}
-            onPress={() => onSectionChange('quan-ly')}
-          >
-            <Text className={`font-medium ${
-              activeSection === 'quan-ly' ? 'text-blue-600' : 'text-gray-700'
-            }`}>
-              Quản lý
-            </Text>
-          </TouchableOpacity>
+      {/* Chọn app */}
+      <View className="px-4 pt-5 pb-3 top-7">
+        <TouchableOpacity
+          onPress={onAppChange}
+          activeOpacity={0.85}
+          className="flex-row items-center bg-white border border-gray-200 rounded-xl px-3 py-3"
+        >
+          <View className="w-10 h-10 rounded-full bg-gray-100 mr-3" />
+          <Text className="flex-1 text-gray-800 font-medium">{appName}</Text>
+          <Ionicons name="chevron-down" size={18} color="#6b7280" />
+        </TouchableOpacity>
+      </View>
 
-          <TouchableOpacity
-            className={`p-3 rounded-lg ${
-              activeSection === 'cai-dat' ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-            }`}
-            onPress={() => onSectionChange('cai-dat')}
-          >
-            <Text className={`font-medium ${
-              activeSection === 'cai-dat' ? 'text-blue-600' : 'text-gray-700'
-            }`}>
-              Cài đặt
-            </Text>
-          </TouchableOpacity>
-        </View>
+      {/* Menu */}
+      <View className="px-2 pb-4 top-6">
+        {SECTIONS.map((sec) => {
+          const isActiveSec = activeSection === sec.key;
+          const hasSubs = (sec.subs?.length || 0) > 0;
+          const opened = open[sec.key];
+
+          return (
+            <View key={sec.key} className="mb-1 overflow-hidden rounded-lg">
+              {/* Hàng section */}
+              <TouchableOpacity
+                onPress={() => {
+                  if (hasSubs) {
+                    toggle(sec.key);
+                    if (!opened) onSectionChange(sec.key);
+                  } else {
+                    onSectionChange(sec.key);
+                  }
+                }}
+                activeOpacity={0.85}
+                className={`px-4 py-3 flex-row items-center ${isActiveSec ? 'bg-cyan-50' : 'bg-white'}`}
+              >
+                <Ionicons
+                  name={sec.icon}
+                  size={18}
+                  color={isActiveSec ? '#0284c7' : '#6b7280'}
+                />
+                <Text className={`ml-3 text-[15px] ${isActiveSec ? 'text-sky-700 font-medium' : 'text-gray-700'}`}>
+                  {sec.label}
+                </Text>
+                {hasSubs ? (
+                  <Ionicons
+                    name={opened ? 'chevron-up' : 'chevron-down'}
+                    size={16}
+                    color="#6b7280"
+                    style={{ marginLeft: 'auto' }}
+                  />
+                ) : (
+                  <Ionicons
+                    name="chevron-forward"
+                    size={16}
+                    color="#9ca3af"
+                    style={{ marginLeft: 'auto' }}
+                  />
+                )}
+              </TouchableOpacity>
+
+              {/* Sub items */}
+              {hasSubs && opened && (
+                <View className="bg-white">
+                  {sec.subs!.map((sub) => {
+                    const activeSub = isActiveSec && activeSubSection === sub.key;
+                    return (
+                      <TouchableOpacity
+                        key={sub.key}
+                        onPress={() => onSectionChange(sec.key, sub.key)}
+                        className={`pl-10 pr-4 py-3 flex-row items-center ${activeSub ? 'bg-cyan-50' : ''}`}
+                        activeOpacity={0.85}
+                      >
+                        <View className={`w-2 h-2 rounded-full mr-3 ${activeSub ? 'bg-sky-500' : 'bg-gray-300'}`} />
+                        <Text className={`text-[14px] ${activeSub ? 'text-sky-700 font-medium' : 'text-gray-700'}`}>
+                          {sub.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+            </View>
+          );
+        })}
       </View>
     </View>
   );

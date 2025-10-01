@@ -8,7 +8,7 @@ interface HomeScreenProps {
   navigation: any;
 }
 
-export default function HomeScreen({ navigation }: HomeScreenProps) {
+export default function HomeTableScreen({ navigation }: HomeScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <TopHeader activeTab="ePush" />
@@ -31,11 +31,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             </View>
 
             <AppTable
-              onAdd={() => navigation.navigate('CreateApp')}
-              onView={(it) => console.log('Xem', it.id)}
-              onEdit={(it) => console.log('Sửa', it.id)}
-              onDelete={(it) => console.log('Xoá', it.id)}
-            />
+  onAdd={() => navigation.navigate('CreateApp')}
+  onView={(it) => navigation.navigate('AppDetail', { appId: it.id, appName: it.name })}
+  onEdit={(it) => console.log('Sửa', it.id)}
+  onDelete={(it) => console.log('Xoá', it.id)}
+/>
           </View>
         </View>
       </ScrollView>

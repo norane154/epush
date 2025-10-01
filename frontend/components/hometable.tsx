@@ -46,31 +46,40 @@ const ROW_H = 64;
 const PAGE_SIZE = 8;
 
 /* ------------ rows ------------ */
-const TableRow = ({ 
-  item, 
-  onView, 
-  onEdit, 
-  onDelete 
-}: { 
-  item: AppData; 
+// --- AppTable.tsx ---
+// ...giữ nguyên import & types
+
+const TableRow = ({
+  item, onView, onEdit, onDelete
+}: {
+  item: AppData;
   onView?: (item: AppData) => void;
   onEdit?: (item: AppData) => void;
   onDelete?: (item: AppData) => void;
 }) => (
   <View className="flex-row border-b border-gray-100 items-center px-4 h-16">
-    <View className="flex-2.5 flex-row items-center">
+    {/* 👇 Bấm vào khu vực avatar + name để đi qua màn chi tiết */}
+    <TouchableOpacity
+      className="flex-[2.5] flex-row items-center"
+      activeOpacity={0.85}
+      onPress={() => onView?.(item)}
+    >
       <View className="w-10 h-10 rounded-full bg-gray-100 mr-3" />
       <View>
-        <Text className="font-semibold text-gray-900 text-sm">{item.name}</Text>
+        <Text className="font-semibold text-slate-800 text-sm underline decoration-slate-300">
+          {item.name}
+        </Text>
         <Text className="text-gray-400 text-xs">{item.bundleId}</Text>
       </View>
-    </View>
-    <Text className="flex-1.5 text-sm text-gray-600">{item.description}</Text>
-    <Text className="flex-1.5 text-sm text-gray-600">{item.createdAt}</Text>
-    <Text className="flex-1 text-sm text-gray-600">{item.createdBy}</Text>
-    <Text className="flex-1.5 text-sm text-gray-600">{item.updatedAt}</Text>
-    <Text className="flex-1 text-sm text-gray-600">{item.updatedBy}</Text>
-    <View className="flex-1.5 flex-row justify-start items-center">
+    </TouchableOpacity>
+
+    <View className="flex-[1.5]"><Text className="text-sm text-gray-600">{item.description}</Text></View>
+    <View className="flex-[1.5]"><Text className="text-sm text-gray-600">{item.createdAt}</Text></View>
+    <View className="flex-[1]"><Text className="text-sm text-gray-600">{item.createdBy}</Text></View>
+    <View className="flex-[1.5]"><Text className="text-sm text-gray-600">{item.updatedAt}</Text></View>
+    <View className="flex-[1]"><Text className="text-sm text-gray-600">{item.updatedBy}</Text></View>
+
+    <View className="flex-[1.5] flex-row items-center">
       <TouchableOpacity className="p-1 mr-3" onPress={() => onView?.(item)}>
         <Icon name="eye" size={16} color="#6b7280" />
       </TouchableOpacity>
@@ -86,15 +95,16 @@ const TableRow = ({
 
 const TableHeader = () => (
   <View className="flex-row bg-gray-50 border-b border-gray-100 px-4 h-14 items-center">
-    <Text className="flex-2.5 text-sm text-gray-800 font-medium">Ứng dụng</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Mô tả</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Ngày tạo</Text>
-    <Text className="flex-1 text-sm text-gray-800 font-medium">Người tạo</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Ngày sửa</Text>
-    <Text className="flex-1 text-sm text-gray-800 font-medium">Người sửa</Text>
-    <Text className="flex-1.5 text-sm text-gray-800 font-medium">Thao tác</Text>
+    <View className="flex-[2.5]"><Text className="text-sm text-gray-800 font-medium">Ứng dụng</Text></View>
+    <View className="flex-[1.5]"><Text className="text-sm text-gray-800 font-medium">Mô tả</Text></View>
+    <View className="flex-[1.5]"><Text className="text-sm text-gray-800 font-medium">Ngày tạo</Text></View>
+    <View className="flex-[1]"><Text className="text-sm text-gray-800 font-medium">Người tạo</Text></View>
+    <View className="flex-[1.5]"><Text className="text-sm text-gray-800 font-medium">Ngày sửa</Text></View>
+    <View className="flex-[1]"><Text className="text-sm text-gray-800 font-medium">Người sửa</Text></View>
+    <View className="flex-[1.5] "><Text className="text-sm text-gray-800 font-medium">Thao tác</Text></View>
   </View>
 );
+
 
 /* ------------ page jump ------------ */
 const PageJump = ({ 

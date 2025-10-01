@@ -31,7 +31,7 @@ export default function HomeAdminScreen({ navigation }: HomeAdminScreenProps) {
             <View className="flex-row items-center gap-6 mt-6">
               <TouchableOpacity 
                 className="w-35 h-35 rounded-xl bg-white border border-slate-200 items-center justify-center p-4"
-                onPress={() => navigation.navigate('Home')}
+                onPress={() => navigation.navigate('HomeTable')}
               >
                 <View className="w-16 h-16 rounded-xl bg-sky-50 items-center justify-center mb-3">
                   <Feather name="layers" size={24} color="#0284c7" />
