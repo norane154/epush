@@ -12,12 +12,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "services/auth.js",
-    "src/HomeScreen.js",
-    "src/LoginScreen.tsx",
-    "App.JS",
-    "components/header.js",
-    "nativewind-env.d.ts"
-  ]
+    "expo-env.d.ts"
+, "services/auth.js", "src/HomeScreen.js", "src/LoginScreen.tsx", "App.JS", "components/header.js"  ]
 }
