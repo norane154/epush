@@ -92,14 +92,14 @@ const Section = ({
 
 type EmailChip = { id: string; value: string };
 
-/* ---------- screen ---------- */
+
 export default function CreateAppScreen({ navigation }: any) {
-  // anchor refs for quick nav
+ 
   const scrollRef = useRef<ScrollView>(null);
   const yWorkplace = useRef(0);
   const yServer = useRef(0);
 
-  // form states
+  
   const [appName, setAppName] = useState('');
   const [appCode, setAppCode] = useState('');
   const [appDesc, setAppDesc] = useState('');
