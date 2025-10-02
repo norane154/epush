@@ -6,7 +6,7 @@ import TopHeader from '../components/header';
 import SidebarBody from '../components/Sidebar';
 import DetailTable from '../components/detailtable';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import CreateNotificationModal from '../components/CreateNotificationModal'; // 👈 2. Import component modal
+import CreateNotificationModal from '../components/detailapp'; // 👈 2. Import component modal
 
 export default function AppDetailScreen() {
   const navigation = useNavigation<any>();
