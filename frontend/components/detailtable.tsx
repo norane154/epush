@@ -207,13 +207,13 @@ export default function DetailTable({
     <View className="bg-white rounded-xl border border-gray-200">
       {/* strip trên */}
       <View className="bg-gray-50 border-b border-gray-200 px-4 h-11 justify-center">
-        <Text className="text-[13px] text-gray-600">Thông báo đã gửi</Text>
+        <Text className="text-[13px] text-gray-600 font-bold">Thông báo đã gửi</Text>
       </View>
 
       <View className="p-4 pt-3">
         {/* HÀNG 1: Title + 3 nút bên phải (zIndex cao) */}
         <View className="flex-row items-center justify-between mb-4" style={{ zIndex: 10 }}>
-          <Text className="text-[20px] font-semibold text-slate-800">App Name</Text>
+          <Text className="text-[20px] font-semibold text-slate-800 text-cyan-400">App Name</Text>
 
           <View className="flex-row items-center gap-2">
             {/* Quản lý nhóm (dropdown) */}

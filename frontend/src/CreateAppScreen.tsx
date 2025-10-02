@@ -175,7 +175,7 @@ export default function CreateAppScreen({ navigation }: any) {
           <View className="bg-white rounded-xl border border-gray-200 mt-4 overflow-hidden">
             {/* title + quick nav */}
             <View className="px-4 md:px-6 py-4 border-b border-gray-100">
-              <Text className="text-lg font-semibold text-gray-800">Tạo mới ứng dụng</Text>
+              <Text className="text-lg font-bold text-gray-800 ">Tạo mới ứng dụng</Text>
 
               <View className="flex-row mt-3">
                 <TouchableOpacity

@@ -37,7 +37,12 @@ const SECTIONS: Section[] = [
       { key: 'danh-muc', label: 'Danh mục' },
     ],
   },
-  { key: 'tai-khoan', label: 'Tài khoản', icon: 'person-outline' },
+  { key: 'tai-khoan', label: 'Tài khoản', icon: 'person-outline',
+    subs: [
+      { key: 'bieu-mau', label: 'Biểu mẫu' },
+      { key: 'danh-muc', label: 'Danh mục' },
+    ],
+   },
 ];
 
 export default function SidebarBody({
@@ -46,7 +51,7 @@ export default function SidebarBody({
   activeSubSection,
   onSectionChange,
   onAppChange,
-  onBack,
+
 }: SidebarProps) {
   const navigation = useNavigation<any>();   
   const [open, setOpen] = useState<Record<string, boolean>>({ [activeSection]: true });
@@ -54,7 +59,7 @@ export default function SidebarBody({
   
 
   return (
-    <View className="w-72 bg-white border-r border-gray-200 relative">
+    <View className="w-[287px] bg-white border-r border-gray-200 relative">
       {/* Chọn app */}
       <View className="px-4  pb-3 top-7">
         <TouchableOpacity
