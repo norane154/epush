@@ -20,7 +20,7 @@ export default function AppDetailScreen() {
           activeSubSection="da-gui"
           onSectionChange={() => {}}
           onAppChange={() => {}}
-          onBack={() => navigation.navigate('HomeTable')} // về màn list
+          onBack={() => navigation.navigate('HomeTable')} 
         />
 
         <ScrollView className="flex-1">

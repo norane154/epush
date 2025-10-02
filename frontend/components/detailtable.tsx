@@ -213,7 +213,7 @@ export default function DetailTable({
       <View className="p-4 pt-3">
         {/* HÀNG 1: Title + 3 nút bên phải (zIndex cao) */}
         <View className="flex-row items-center justify-between mb-4" style={{ zIndex: 10 }}>
-          <Text className="text-[20px] font-semibold text-slate-800 text-[#00A2B9]">App Name</Text>
+          <Text className="text-[20px] font-semibold text-slate-800">App Name</Text>
 
           <View className="flex-row items-center gap-2">
             {/* Quản lý nhóm (dropdown) */}
